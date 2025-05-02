@@ -14,9 +14,6 @@ class RtlsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'isi_rtl';
 
-    protected static ?string $emptyStateHeading = 'Tidak Ada Rencana Tindak Lanjut';
-    protected static ?string $emptyStateDescription = 'Buat Rencana Tindak Lanjut pertama untuk sesi ini.';
-
     public function form(Form $form): Form
     {
         return $form

@@ -32,7 +32,7 @@ class RtlResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('session_id')
                             ->label('Sesi Coaching')
-                            ->relationship('session', 'tanggal') // Bisa disesuaikan
+                            ->relationship('session', 'tanggal')
                             ->searchable()
                             ->preload()
                             ->required(),
@@ -75,11 +75,11 @@ class RtlResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(), // Tambahkan DeleteAction
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(), // Tambahkan DeleteBulkAction
+                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
