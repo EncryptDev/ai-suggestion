@@ -45,6 +45,9 @@ class ObservasiResource extends Resource
                         Forms\Components\DatePicker::make('tanggal')
                             ->label('Tanggal Observasi')
                             ->required(),
+                        Forms\Components\TextInput::make('prompt')
+                            ->label('Prompt Untuk Ai')
+                            ->required(),
                         Forms\Components\Textarea::make('narasi_temuan')
                             ->label('Narasi Temuan')
                             ->required()
