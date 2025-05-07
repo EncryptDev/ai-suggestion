@@ -14,6 +14,7 @@ class Sekolah extends Model
         'npsn',
         'jenjang',
         'wilayah',
+        'creator_id',
     ];
 
     public function users()

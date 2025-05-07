@@ -120,7 +120,7 @@ class ObservasiResource extends Resource
                                 ],
                                 [
                                     'role' => 'user',
-                                    'content' => $record->propmt . "\n\n" . $record->narasi_temuan
+                                    'content' => $record->prompt . "\n\n" . $record->narasi_temuan
                                 ]
                             ],
                             'temperature' => 0.7,
