@@ -25,9 +25,9 @@ class CoachingSession extends Model
         return $this->belongsTo(User::class, 'pengawas_id');
     }
 
-    public function kepsek()
+    public function user()
     {
-        return $this->belongsTo(User::class, 'kepsek_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function rtls()
