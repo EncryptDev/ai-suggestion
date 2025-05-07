@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\RoleEnum;
 use App\Filament\Resources\SekolahResource\Pages;
 use App\Filament\Resources\SekolahResource\RelationManagers;
 use App\Models\Sekolah;
@@ -10,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class SekolahResource extends Resource
 {
@@ -82,5 +84,10 @@ class SekolahResource extends Resource
             'create' => Pages\CreateSekolah::route('/create'),
             'edit' => Pages\EditSekolah::route('/{record}/edit'),
         ];
+    }
+
+    public static function canAccess(): bool
+    {
+        return Auth::user()->role === RoleEnum::PENGAWAS;
     }
 }

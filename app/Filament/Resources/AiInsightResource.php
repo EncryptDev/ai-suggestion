@@ -2,14 +2,16 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Forms;
+use Filament\Tables;
+use App\Enums\RoleEnum;
+use Filament\Forms\Form;
+use App\Models\AiInsight;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
 use App\Filament\Resources\AiInsightResource\Pages;
 use App\Filament\Resources\AiInsightResource\RelationManagers;
-use App\Models\AiInsight;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
 
 class AiInsightResource extends Resource
 {
@@ -89,5 +91,10 @@ class AiInsightResource extends Resource
             'create' => Pages\CreateAiInsight::route('/create'),
             'edit' => Pages\EditAiInsight::route('/{record}/edit'),
         ];
+    }
+
+    public static function canAccess(): bool
+    {
+        return Auth::user()->role === RoleEnum::PENGAWAS;
     }
 }

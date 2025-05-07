@@ -3,21 +3,22 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use App\Models\User;
 use Filament\Tables;
+use App\Enums\RoleEnum;
 use Filament\Forms\Form;
+use App\Models\AiInsight;
 use App\Models\Observasi;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action;
-use App\Filament\Resources\ObservasiResource\Pages;
-use App\Filament\Resources\ObservasiResource\RelationManagers;
-use App\Models\AiInsight;
-use App\Models\User;
-use Filament\Notifications\Notification;
 use Filament\Support\Colors\Color;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Actions\Action;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\ObservasiResource\Pages;
+use App\Filament\Resources\ObservasiResource\RelationManagers;
 
 class ObservasiResource extends Resource
 {
@@ -216,5 +217,10 @@ class ObservasiResource extends Resource
             'create' => Pages\CreateObservasi::route('/create'),
             'edit' => Pages\EditObservasi::route('/{record}/edit'),
         ];
+    }
+
+    public static function canAccess(): bool
+    {
+        return Auth::user()->role === RoleEnum::PENGAWAS;
     }
 }

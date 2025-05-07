@@ -2,14 +2,17 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Forms;
+use Filament\Tables;
+use App\Enums\RoleEnum;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use App\Models\CoachingSession;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\CoachingSessionResource\Pages;
 use App\Filament\Resources\CoachingSessionResource\RelationManagers;
-use App\Models\CoachingSession;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
 
 class CoachingSessionResource extends Resource
 {
@@ -38,7 +41,11 @@ class CoachingSessionResource extends Resource
                             ->required(),
                         Forms\Components\Select::make('observasi_id')
                             ->label('Observasi')
-                            ->relationship('observasi', 'narasi_temuan')
+                            ->relationship(
+                                name: 'observasi',
+                                titleAttribute: 'narasi_temuan',
+                                modifyQueryUsing: fn(Builder $query) => $query->where('user_id', Auth::id())
+                            )
                             ->searchable()
                             ->preload()
                             ->required(),
@@ -111,5 +118,9 @@ class CoachingSessionResource extends Resource
             'edit' => Pages\EditCoachingSession::route('/{record}/edit'),
         ];
     }
-}
 
+    public static function canCreate(): bool
+    {
+        return Auth::user()->role !== RoleEnum::PENGAWAS;
+    }
+}
