@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CoachingSession extends Model
 {
@@ -11,6 +13,7 @@ class CoachingSession extends Model
 
     protected $fillable = [
         'pengawas_id',
+        'observasi_id',
         'kepsek_id',
         'tanggal',
         'topik_diskusi',
@@ -30,5 +33,10 @@ class CoachingSession extends Model
     public function rtls()
     {
         return $this->hasMany(Rtl::class, 'session_id');
+    }
+
+    public function observasi(): BelongsTo
+    {
+        return $this->belongsTo(Observasi::class, 'observasi_id');
     }
 }

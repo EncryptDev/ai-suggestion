@@ -36,6 +36,12 @@ class CoachingSessionResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required(),
+                        Forms\Components\Select::make('observasi_id')
+                            ->label('Observasi')
+                            ->relationship('observasi', 'narasi_temuan')
+                            ->searchable()
+                            ->preload()
+                            ->required(),
                         Forms\Components\Select::make('kepsek_id')
                             ->label('Kepala Sekolah')
                             ->relationship('kepsek', 'name')

@@ -36,6 +36,12 @@ class RefleksiResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required(),
+                        Forms\Components\Select::make('rtl_id')
+                            ->label('Pilih RTL')
+                            ->relationship('rtl', 'isi_rtl')
+                            ->searchable()
+                            ->preload()
+                            ->required(),
                         Forms\Components\TextInput::make('periode')
                             ->label('Periode')
                             ->maxLength(255),

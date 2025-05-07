@@ -2,14 +2,19 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Forms;
+use Filament\Tables;
+use Filament\Forms\Form;
+use App\Models\Observasi;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use App\Filament\Resources\ObservasiResource\Pages;
 use App\Filament\Resources\ObservasiResource\RelationManagers;
-use App\Models\Observasi;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
+use App\Models\AiInsight;
+use Filament\Notifications\Notification;
+use Filament\Support\Colors\Color;
+use Illuminate\Support\Facades\Http;
 
 class ObservasiResource extends Resource
 {
@@ -46,6 +51,7 @@ class ObservasiResource extends Resource
                             ->label('Tanggal Observasi')
                             ->required(),
                         Forms\Components\TextInput::make('prompt')
+                            ->name('prompt')
                             ->label('Prompt Untuk Ai')
                             ->required(),
                         Forms\Components\Textarea::make('narasi_temuan')
@@ -84,6 +90,85 @@ class ObservasiResource extends Resource
                 //
             ])
             ->actions([
+                Action::make('generate')
+                    ->label('Generate')
+                    ->icon('heroicon-o-sparkles')
+                    ->action(function ($record, Action $action) {
+                        $ai = AiInsight::where('observasi_id', $record->id)->first();
+
+                        if ($ai) {
+                            Notification::make()
+                                ->title('Gagal Generate')
+                                ->body('Observasi ini sudah pernah dibuatkan ai inshigts sebelumnya')
+                                ->warning()
+                                ->send();
+
+                            $action->halt();
+                        }
+                        $apiKey = env('OPENAI_API_KEY');
+
+                        //suggestion Generate AI
+                        $suggestResponse = Http::withHeaders([
+                            'Authorization' => "Bearer {$apiKey}",
+                            'Content-Type' => 'application/json',
+                        ])->post('https://api.openai.com/v1/chat/completions', [
+                            'model' => 'gpt-3.5-turbo',
+                            'messages' => [
+                                [
+                                    'role' => 'system',
+                                    'content' => 'langsung jawab semua pertanyaan dalam format poin-poin. Jangan gunakan paragraf langsung jawab poin per poin'
+                                ],
+                                [
+                                    'role' => 'user',
+                                    'content' => $record->propmt . "\n\n" . $record->narasi_temuan
+                                ]
+                            ],
+                            'temperature' => 0.7,
+                        ]);
+
+                        $suggestJson = $suggestResponse->json();
+
+
+                        $summarizeContent =  Http::withHeaders([
+                            'Authorization' => "Bearer {$apiKey}",
+                            'Content-Type' => 'application/json',
+                        ])->post('https://api.openai.com/v1/chat/completions', [
+                            'model' => 'gpt-3.5-turbo',
+                            'messages' => [
+                                [
+                                    'role' => 'system',
+                                    'content' => 'Jawab langsung to the point sajikan jawaban dalam paragraf yang ringkas tapi mencakup semua isi pertanyaan'
+                                ],
+                                [
+                                    'role' => 'user',
+                                    'content' => 'Ringkas pernyataan ini dalam sebuah paragraf' . "\n\nPernyataan:" . $record->narasi_temuan
+                                ]
+                            ],
+                            'temperature' => 0.7,
+                        ]);
+
+                        $summarizeJson = $summarizeContent->json();
+
+
+                        AiInsight::create([
+                            'observasi_id' => $record->id,
+                            'insight' => $summarizeJson['choices'][0]['message']['content'],
+                            'rekomendasi' => $suggestJson['choices'][0]['message']['content'],
+                        ]);
+
+
+                        $action->success();
+
+                        Notification::make()
+                            ->title('Berhasil Generate')
+                            ->body('Saran berhasil di generate oleh AI silahkan lihat pada AI Insshigts')
+                            ->success()
+                            ->send();
+                    })
+                    // ->requiresConfirmation()
+                    ->disabled(fn($record) => $record->generated_at !== null) // Opsional: disable jika sudah digenerate
+                    ->color(Color::Blue),
+
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])

@@ -1,3 +1,3 @@
 <x-filament-panels::page>
-<p>Ini adalah tes</p>
+    <livewire:filament.prompt-pages />
 </x-filament-panels::page>

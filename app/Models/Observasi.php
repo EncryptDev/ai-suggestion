@@ -15,6 +15,7 @@ class Observasi extends Model
         'tanggal',
         'narasi_temuan',
         'file_pendukung',
+        'prompt'
     ];
 
     public function user()

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Refleksi extends Model
 {
@@ -12,6 +13,7 @@ class Refleksi extends Model
     protected $fillable = [
         'user_id',
         'periode',
+        'rtl_id',
         'isi_refleksi',
         'ai_response',
     ];
@@ -19,5 +21,10 @@ class Refleksi extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function rtl(): BelongsTo
+    {
+        return $this->belongsTo(Rtl::class, 'rtl_id');
     }
 }
