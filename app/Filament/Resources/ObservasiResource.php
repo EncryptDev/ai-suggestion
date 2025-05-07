@@ -12,8 +12,11 @@ use Filament\Tables\Actions\Action;
 use App\Filament\Resources\ObservasiResource\Pages;
 use App\Filament\Resources\ObservasiResource\RelationManagers;
 use App\Models\AiInsight;
+use App\Models\User;
 use Filament\Notifications\Notification;
 use Filament\Support\Colors\Color;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class ObservasiResource extends Resource
@@ -35,24 +38,44 @@ class ObservasiResource extends Resource
                 Forms\Components\Section::make('Informasi Observasi')
                     ->description('Masukkan detail observasi.')
                     ->schema([
-                        Forms\Components\Select::make('user_id')
-                            ->label('Pengawas')
-                            ->relationship('user', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required(),
                         Forms\Components\Select::make('sekolah_id')
                             ->label('Sekolah')
-                            ->relationship('sekolah', 'nama_sekolah')
+                            ->relationship(
+                                name: 'sekolah',
+                                titleAttribute: 'nama_sekolah',
+                                modifyQueryUsing: fn(Builder $query) => $query->where('creator_id', Auth::user()->id)
+                            )
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->reactive(),
+
+                        Forms\Components\Select::make('user_id')
+                            ->label('Guru / Kepsek')
+                            ->options(function (callable $get) {
+                                $sekolahId = $get('sekolah_id');
+                                if (!$sekolahId) {
+                                    return [];
+                                }
+
+                                return User::where('sekolah_id', $sekolahId)
+                                    ->where('creator_id', Auth::id())
+                                    ->pluck('name', 'id');
+                            })
                             ->searchable()
                             ->preload()
                             ->required(),
+
                         Forms\Components\DatePicker::make('tanggal')
                             ->label('Tanggal Observasi')
+                            ->columnSpanFull()
                             ->required(),
-                        Forms\Components\TextInput::make('prompt')
+                        Forms\Components\Textarea::make('prompt')
                             ->name('prompt')
                             ->label('Prompt Untuk Ai')
+                            ->rows(3)
+                            ->columnSpanFull()
+                            ->default('Jika Saya seorang pendamping satuan pendidikan tingkat SMK berikan saran rencana tindak lanjut bagi kepala sekolah apabila hasil observasi seperti berikut ini')
                             ->required(),
                         Forms\Components\Textarea::make('narasi_temuan')
                             ->label('Narasi Temuan')

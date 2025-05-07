@@ -15,12 +15,18 @@ class Observasi extends Model
         'tanggal',
         'narasi_temuan',
         'file_pendukung',
-        'prompt'
+        'prompt',
+        'pengawas_id'
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function pengawas()
+    {
+        return $this->belongsTo(User::class, 'pengawas_id');
     }
 
     public function sekolah()
