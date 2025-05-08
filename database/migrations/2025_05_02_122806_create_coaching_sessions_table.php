@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('coaching_sessions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('kepsek_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('pengawas_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('observasi_id')->constrained('observasis','id')->cascadeOnDelete();
             $table->date('tanggal');
             $table->text('topik_diskusi');

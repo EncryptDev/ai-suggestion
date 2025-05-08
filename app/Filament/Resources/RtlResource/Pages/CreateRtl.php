@@ -9,4 +9,10 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateRtl extends CreateRecord
 {
     protected static string $resource = RtlResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }
+

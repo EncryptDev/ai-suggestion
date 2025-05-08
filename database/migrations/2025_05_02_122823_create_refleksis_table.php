@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('refleksis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('rtl_id')->constrained('rtls', 'id')->cascadeOnDelete();
+           $table->foreignId('rtl_id')->constrained('rtls', 'id')->cascadeOnDelete();
             $table->string('periode')->nullable();
             $table->text('isi_refleksi');
             $table->text('ai_response')->nullable();

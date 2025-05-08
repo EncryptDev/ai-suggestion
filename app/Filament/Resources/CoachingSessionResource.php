@@ -33,12 +33,6 @@ class CoachingSessionResource extends Resource
                 Forms\Components\Section::make('Informasi Sesi Coaching')
                     ->description('Masukkan detail sesi coaching.')
                     ->schema([
-                        Forms\Components\Select::make('pengawas_id')
-                            ->label('Pengawas')
-                            ->relationship('pengawas', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required(),
                         Forms\Components\Select::make('observasi_id')
                             ->label('Observasi')
                             ->relationship(
@@ -46,12 +40,6 @@ class CoachingSessionResource extends Resource
                                 titleAttribute: 'narasi_temuan',
                                 modifyQueryUsing: fn(Builder $query) => $query->where('user_id', Auth::id())
                             )
-                            ->searchable()
-                            ->preload()
-                            ->required(),
-                        Forms\Components\Select::make('kepsek_id')
-                            ->label('Kepala Sekolah')
-                            ->relationship('kepsek', 'name')
                             ->searchable()
                             ->preload()
                             ->required(),
@@ -76,8 +64,8 @@ class CoachingSessionResource extends Resource
                 Tables\Columns\TextColumn::make('pengawas.name')
                     ->label('Pengawas')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('kepsek.name')
-                    ->label('Kepala Sekolah')
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Kepala Sekolah/Guru')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('tanggal')
                     ->label('Tanggal Sesi')

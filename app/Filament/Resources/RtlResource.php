@@ -32,12 +32,34 @@ class RtlResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('session_id')
                             ->label('Sesi Coaching')
-                            ->relationship('session', 'tanggal')
+                            ->relationship('session', 'topik_diskusi')
                             ->searchable()
                             ->preload()
-                            ->required(),
-                        Forms\Components\Textarea::make('isi_rtl')
-                            ->label('Deskripsi RTL')
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(fn($state, callable $set) => $set('isi_rtl', null)),
+                        Forms\Components\Select::make('isi_rtl')
+                            ->label('Rekomendasi RRTL')
+                            ->options(function (callable $get) {
+                                $sessionId = $get('session_id');
+                                if (! $sessionId) {
+                                    return [];
+                                }
+
+                                $coachingSession = \App\Models\CoachingSession::with('observasi')->find($sessionId);
+
+                                if (! $coachingSession || ! $coachingSession->observasi) {
+                                    return [];
+                                }
+
+                                $rekomendasi = $coachingSession->observasi->aiInsights->first()->rekomendasi;
+
+
+                                return collect(explode("\n", $rekomendasi))
+                                    ->filter(fn ($line) => !empty(trim($line)))
+                                    ->mapWithKeys(fn ($item) => [$item => $item])
+                                    ->toArray();
+                            })
                             ->required()
                             ->columnSpan('full'),
                         Forms\Components\Select::make('status')

@@ -56,4 +56,6 @@ class RtlsRelationManager extends RelationManager
                 ]),
             ]);
     }
+
+    public function isReadOnly(): bool { return false; }
 }

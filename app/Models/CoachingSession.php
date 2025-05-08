@@ -14,7 +14,7 @@ class CoachingSession extends Model
     protected $fillable = [
         'pengawas_id',
         'observasi_id',
-        'kepsek_id',
+        'user_id',
         'tanggal',
         'topik_diskusi',
         'hasil_refleksi',
