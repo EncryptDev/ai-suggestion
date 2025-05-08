@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
 use App\Filament\Resources\AiInsightResource\Pages;
 use App\Filament\Resources\AiInsightResource\RelationManagers;
+use Illuminate\Database\Eloquent\Builder;
 
 class AiInsightResource extends Resource
 {
@@ -82,6 +83,15 @@ class AiInsightResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+
+        return parent::getEloquentQuery()
+            ->whereHas('observasi.user', function($q){
+                $q->where('creator_id', Auth::id());
+            })->orderByDesc('created_at');
     }
 
     public static function getPages(): array

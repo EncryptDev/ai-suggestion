@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sepakat-AI - Landing Page</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom scrollbar for services cards if needed on desktop */
@@ -102,40 +103,42 @@
     </section>
 
     <!-- Register Section -->
-    <section id="register" class="bg-indigo-600 py-16 px-6">
-        <div class="max-w-lg mx-auto bg-white rounded-xl shadow-lg p-8">
-            <h2 class="text-3xl font-bold text-center mb-6 text-gray-900">Buat Akun Sepakat-AI</h2>
-            <form class="space-y-6" action="#" method="POST">
-                <div>
-                    <label for="name" class="block text-gray-700 font-semibold mb-1">Nama Lengkap</label>
-                    <input type="text" id="name" name="name" required
-                        class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-                        placeholder="Nama Anda" />
-                </div>
-                <div>
-                    <label for="email" class="block text-gray-700 font-semibold mb-1">Email</label>
-                    <input type="email" id="email" name="email" required
-                        class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-                        placeholder="email@domain.com" />
-                </div>
-                <div>
-                    <label for="password" class="block text-gray-700 font-semibold mb-1">Kata Sandi</label>
-                    <input type="password" id="password" name="password" required
-                        class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-                        placeholder="Minimal 8 karakter" minlength="8" />
-                </div>
-                <button type="submit"
-                    class="w-full bg-indigo-600 text-white font-semibold rounded-lg py-3 hover:bg-indigo-700 transition">
-                    Daftar Akun
-                </button>
-            </form>
-        </div>
-    </section>
+    <livewire:components.create-user-home />
 
     <footer class="text-center py-6 text-gray-500 text-sm">
         &copy; 2024 Sepakat-AI. All rights reserved.
     </footer>
-
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('success-notif', (message) => {
+                Toastify({
+                    text: message.message,
+                    duration: 3000,
+                    close: true,
+                    gravity: "top", // `top` or `bottom`
+                    position: "right", // `left`, `center` or `right`
+                    stopOnFocus: true, // Prevents dismissing of toast on hover
+                    style: {
+                        background: "linear-gradient(to right, #00b09b, #96c93d)",
+                    }, // Callback after click
+                }).showToast();
+            });
+            Livewire.on('error-notif', (message) => {
+                Toastify({
+                    text: message.message,
+                    duration: 3000,
+                    close: true,
+                    gravity: "top", // `top` or `bottom`
+                    position: "right", // `left`, `center` or `right`
+                    stopOnFocus: true, // Prevents dismissing of toast on hover
+                    style: {
+                        background: "linear-gradient(to right, #ff6f91, #ff807d, #ff966d, #ffae61, #ffc75f)",
+                    }, // Callback after click
+                }).showToast();
+            });
+        });
+    </script>
 </body>
 
 </html>

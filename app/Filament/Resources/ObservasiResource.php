@@ -219,6 +219,15 @@ class ObservasiResource extends Resource
         ];
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+
+        return parent::getEloquentQuery()
+            ->whereHas('user', function($q){
+                $q->where('creator_id', Auth::id());
+            })->orderByDesc('created_at');
+    }
+
     public static function canAccess(): bool
     {
         return Auth::user()->role === RoleEnum::PENGAWAS;

@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
 class SekolahResource extends Resource
@@ -84,6 +85,13 @@ class SekolahResource extends Resource
             'create' => Pages\CreateSekolah::route('/create'),
             'edit' => Pages\EditSekolah::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+
+        return parent::getEloquentQuery()
+           ->where('creator_id', Auth::id())->orderByDesc('created_at');
     }
 
     public static function canAccess(): bool

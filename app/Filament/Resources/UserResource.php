@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserResource extends Resource
 {
@@ -35,7 +36,7 @@ class UserResource extends Resource
                     ->password()
                     ->required()
                     ->maxLength(255)
-                    ->dehydrateStateUsing(fn ($state) => bcrypt($state))
+                    ->dehydrateStateUsing(fn($state) => bcrypt($state))
                     ->hiddenOn('edit'),
                 Forms\Components\Select::make('role')
                     ->options([
@@ -80,6 +81,13 @@ class UserResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+
+        return parent::getEloquentQuery()
+            ->where('creator_id', Auth::id())->orderByDesc('created_at');
     }
 
     public static function getPages(): array
