@@ -38,4 +38,9 @@ class Observasi extends Model
     {
         return $this->hasMany(AiInsight::class, 'observasi_id');
     }
+
+    public function getFilamentRecordTitleAttribute(): string
+    {
+        return $this->narasi_temuan;
+    }
 }
