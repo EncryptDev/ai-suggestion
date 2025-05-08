@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Models\Rtl;
 use Filament\Forms;
 use Filament\Tables;
+use App\Enums\RoleEnum;
 use App\Models\Refleksi;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -13,9 +14,12 @@ use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Filament\Forms\Components\Textarea;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Placeholder;
 use App\Filament\Resources\RefleksiResource\Pages;
 use Filament\Forms\Components\Actions\Action as FormAction;
 use App\Filament\Resources\RefleksiResource\RelationManagers;
+use Filament\Forms\Components\TextInput;
 
 class RefleksiResource extends Resource
 {
@@ -131,8 +135,27 @@ class RefleksiResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->form([
+                        Placeholder::make('pengguna')
+                            ->label('User')
+                            ->content(fn($record) => $record->user->name ?? '-'),
+                        TextInput::make('periode')
+                            ->label('Periode')
+                            ->disabled(),
+                        Placeholder::make('isi_refleksi')
+                            ->content(fn($record) => $record->isi_refleksi ?? '-')
+                            ->label('Isi Refleksi'),
+                        Placeholder::make('ai_response')
+                            ->content(fn($record) => $record->ai_response ?? '-')
+                            ->label('Response AI'),
+
+
+                    ]),
+                Tables\Actions\EditAction::make()
+                ->visible(fn() => Auth::user()->role !== RoleEnum::PENGAWAS),
+                Tables\Actions\DeleteAction::make()
+                ->visible(fn() => Auth::user()->role !== RoleEnum::PENGAWAS),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -146,6 +169,20 @@ class RefleksiResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('user', function($q){
+                $q->where('creator_id', Auth::id());
+            })->orderByDesc('created_at');
+    }
+
+
+    public static function canCreate(): bool
+    {
+        return Auth::user()->role !== RoleEnum::PENGAWAS;
     }
 
     public static function getPages(): array

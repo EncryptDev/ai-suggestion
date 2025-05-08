@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\RoleEnum;
 use App\Filament\Resources\RtlResource\Pages;
 use App\Filament\Resources\RtlResource\RelationManagers;
 use App\Models\Rtl;
@@ -10,6 +11,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class RtlResource extends Resource
 {
@@ -56,8 +59,8 @@ class RtlResource extends Resource
 
 
                                 return collect(explode("\n", $rekomendasi))
-                                    ->filter(fn ($line) => !empty(trim($line)))
-                                    ->mapWithKeys(fn ($item) => [$item => $item])
+                                    ->filter(fn($line) => !empty(trim($line)))
+                                    ->mapWithKeys(fn($item) => [$item => $item])
                                     ->toArray();
                             })
                             ->required()
@@ -96,8 +99,10 @@ class RtlResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn() => Auth::user()->role !== RoleEnum::PENGAWAS),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn() => Auth::user()->role !== RoleEnum::PENGAWAS),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -111,6 +116,19 @@ class RtlResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('session.user', function($q){
+                $q->where('creator_id', Auth::id());
+            })->orderByDesc('created_at');
+    }
+
+    public static function canCreate(): bool
+    {
+        return Auth::user()->role !== RoleEnum::PENGAWAS;
     }
 
     public static function getPages(): array

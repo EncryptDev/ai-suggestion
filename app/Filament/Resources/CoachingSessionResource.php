@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\CoachingSessionResource\Pages;
 use App\Filament\Resources\CoachingSessionResource\RelationManagers;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
 
 class CoachingSessionResource extends Resource
 {
@@ -81,9 +84,31 @@ class CoachingSessionResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->form([
+                        Placeholder::make('narasi')
+                            ->label('Narasi Temuan')
+                            ->content(fn($record) => $record->observasi->narasi_temuan ?? '-'),
+                        Placeholder::make('user_name')
+                            ->label('Kepala Sekolah / Guru')
+                            ->content(fn($record) => $record->user?->name ?? '-'),
+                        TextInput::make('tanggal')
+                            ->label('Tanggal Sesi')
+                            ->disabled(),
+                        Placeholder::make('topik_diskusi')
+                            ->content(fn($record) => $record->topik_diskusi ?? '-')
+                            ->label('Topik Diskusi'),
+                        Placeholder::make('hasil_refleksi')
+                            ->content(fn($record) => $record->hasil_refleksi ?? '-')
+                            ->label('Hasil Refleksi'),
+
+
+                    ]),
+
+                Tables\Actions\EditAction::make()
+                    ->visible(fn () => Auth::user()->role !== RoleEnum::PENGAWAS),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn () => Auth::user()->role !== RoleEnum::PENGAWAS),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -99,12 +124,21 @@ class CoachingSessionResource extends Resource
         ];
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('user', function($q){
+                $q->where('creator_id', Auth::id());
+            })->orderByDesc('created_at');
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListCoachingSessions::route('/'),
             'create' => Pages\CreateCoachingSession::route('/create'),
             'edit' => Pages\EditCoachingSession::route('/{record}/edit'),
+            // 'view' => Pages\ViewCoachingSession::route('{record}/view'),
         ];
     }
 
