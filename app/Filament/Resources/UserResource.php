@@ -19,11 +19,18 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationGroup = 'Master Data';
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                Forms\Components\Select::make('sekolah_id')
+                    ->relationship('sekolah', 'nama_sekolah')
+                    ->searchable()
+                    ->preload()
+                    ->label('Sekolah'),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
@@ -45,11 +52,7 @@ class UserResource extends Resource
                         'guru' => 'Guru',
                     ])
                     ->required(),
-                Forms\Components\Select::make('sekolah_id')
-                    ->relationship('sekolah', 'nama_sekolah')
-                    ->searchable()
-                    ->preload()
-                    ->label('Sekolah'),
+
             ]);
     }
 
